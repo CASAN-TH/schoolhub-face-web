@@ -15,7 +15,7 @@ export class LoginComponent implements OnInit {
   };
 
   constructor(
-    private restApiService : RestApiService,
+    private restApiService: RestApiService,
     private router: Router
   ) { }
 
@@ -23,8 +23,8 @@ export class LoginComponent implements OnInit {
   }
 
   formValid() {
-    let isValid:boolean = this.credential && this.credential.username && this.credential.password ? true : false;
-    
+    let isValid: boolean = this.credential && this.credential.username && this.credential.password ? true : false;
+
     return isValid;
   }
 
@@ -32,19 +32,13 @@ export class LoginComponent implements OnInit {
     try {
       let loginResponse = await this.restApiService.post(Constants.URL() + '/api/auth/signin', this.credential);
       if (loginResponse['status'] === 200) {
-        try {
-          window.localStorage.setItem('token-admin@schoolhub', loginResponse['token']);
-          this.router.navigate(['/home']);
-        } catch (error) {
-          if (error) {
-            //this.dataService.error('โหลดข้อมูลผู้ใช้ล้มเหลว');
-          }
-        }
-      }
-    } catch (error) {
-      if (error) {
+        window.localStorage.setItem('token-admin@schoolhub', loginResponse['token']);
+        this.router.navigate(['/home']);
+      }else{
         //this.dataService.error('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
       }
+    } catch (error) {
+      //this.dataService.error('ไม่สามารถเชื่อมต่อข้อมูลได้');
     }
   }
 
