@@ -1,7 +1,11 @@
+import { RestApiService } from './../../providers/rest-api.service';
+import { AuthService } from './../../providers/auth.service';
 import { FaceApiService } from './../../providers/face-api.service';
 import { Component, OnInit } from '@angular/core';
 import 'tracking/build/tracking';
 import 'tracking/build/data/face';
+import { Constants } from '../../app.constants';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -11,13 +15,20 @@ export class HomeComponent implements OnInit {
   tracker: any;
   task: any;
   isLock: boolean = false;
-  personGroupId: any = "5b4ea676a581760014b38015";
+  personGroupId: any;
   personIDs: any = [];
 
-  constructor(private faceService: FaceApiService) { }
+  constructor(private faceService: FaceApiService, private auth: AuthService, private restApi: RestApiService, private router: Router) {
+    if (this.auth.authenticated()) {
+      this.personGroupId = this.auth.Uesr().schoolid;
+      //this.personGroupId = "5b4ea676a581760014b38015";
+      // console.log(this.personGroupId);
+    }
+  }
 
   ngOnInit() {
     this.initTracker();
+
   }
 
   initTracker(): void {
@@ -70,7 +81,7 @@ export class HomeComponent implements OnInit {
       }
     } else {
       if (this.personIDs.length > 0) {
-        //this.personIDs = [];
+        this.personIDs = [];
       }
     }
   }
@@ -90,19 +101,22 @@ export class HomeComponent implements OnInit {
             this.faceService.Identify(body).then((identifies: any) => {
               if (identifies) {
                 this.isLock = false;
-                //console.log(this.personIDs);
                 identifies.forEach(identity => {
                   identity.candidates.forEach(person => {
                     if (this.personIDs.indexOf(person.personId) < 0) {
                       this.personIDs.push(person.personId);
                       this.faceService.GetPerson(this.personGroupId, person.personId).then((res: any) => {
-                        console.log(res);
                         let person = res;
                         person.image = face;
                         let bodyReq = {
                           image: face,
                           citizenid: person.userData
                         };
+                        this.restApi.post(Constants.URL() + '/api/time-attendance', bodyReq).then((resp: any) => {
+                          console.log(resp);
+                        }).catch(err => {
+                          console.log(err);
+                        });
                       });
                     }
 
@@ -132,6 +146,12 @@ export class HomeComponent implements OnInit {
 
   getVideo(): HTMLVideoElement {
     return <HTMLVideoElement>document.getElementsByTagName('video')[0];
+  }
+
+  onLogout() {
+    window.localStorage.removeItem('token-admin@schoolhub');
+    this.task.stop();
+    this.router.navigate(['']);
   }
 
 }

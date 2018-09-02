@@ -1,3 +1,4 @@
+import { AuthService } from './../../providers/auth.service';
 import { Constants } from './../../app.constants';
 import { RestApiService } from './../../providers/rest-api.service';
 import { Component, OnInit } from '@angular/core';
@@ -16,8 +17,13 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private restApiService: RestApiService,
+    private auth: AuthService,
     private router: Router
-  ) { }
+  ) { 
+    if (this.auth.authenticated()) {
+      this.router.navigate(['/home']);
+    }
+  }
 
   ngOnInit() {
   }

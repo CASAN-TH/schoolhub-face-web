@@ -5,4 +5,15 @@
       <canvas id="canvas" width="640" height="480"></canvas>
     </div>
   </div>
+  <div class="row mt-2">
+    <div class="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-center">
+      <button type="button " (click)="onLogout()"  class="btn btn-info btn-fill btn-wd" >ออกจากระบบ</button>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div class="col-xs-12 col-md-12 col-lg-12 d-flex justify-content-center">
+      <p *ngIf="isLock" class="pass">ผ่าน</p>
+    </div>
+  </div>
+  
 </div>
