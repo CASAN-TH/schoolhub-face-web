@@ -265,8 +265,9 @@ var HomeComponent = /** @class */ (function () {
         this.personIDs = [];
         if (this.auth.authenticated()) {
             this.personGroupId = this.auth.Uesr().schoolid;
-            //this.personGroupId = "5b4ea676a581760014b38015";
-            // console.log(this.personGroupId);
+            if (this.personGroupId === "5b89127e9bcb300014a221fe") {
+                this.personGroupId = "5b4ea676a581760014b38015";
+            }
         }
     }
     HomeComponent.prototype.ngOnInit = function () {
@@ -276,9 +277,11 @@ var HomeComponent = /** @class */ (function () {
         var _this = this;
         try {
             var global = window;
-            this.tracker = new global.tracking.ObjectTracker('face');
-            this.task = global.tracking.track('#video', this.tracker, { camera: true });
-            this.tracker.on('track', function (event) {
+            this.tracker = new global.tracking.ObjectTracker("face");
+            this.task = global.tracking.track("#video", this.tracker, {
+                camera: true
+            });
+            this.tracker.on("track", function (event) {
                 var data = event.data;
                 //console.log(data);
                 _this.tryToDetectFace(data);
@@ -296,7 +299,7 @@ var HomeComponent = /** @class */ (function () {
         if (trackedData.length > 0) {
             var video = this.getVideo();
             var canvas_1 = this.getCanvas();
-            var ctx_1 = canvas_1.getContext('2d');
+            var ctx_1 = canvas_1.getContext("2d");
             if (video && canvas_1) {
                 canvas_1.width = video.videoWidth;
                 canvas_1.height = video.videoHeight;
@@ -305,10 +308,10 @@ var HomeComponent = /** @class */ (function () {
                     var img = new Image();
                     img.src = canvas_1.toDataURL("image/jpeg", 0.75);
                     var gradient = ctx_1.createLinearGradient(0, 0, 170, 0);
-                    ctx_1.strokeStyle = '#a64ceb';
+                    ctx_1.strokeStyle = "#a64ceb";
                     ctx_1.strokeRect(rect.x, rect.y, rect.width, rect.height);
-                    ctx_1.font = '11px Helvetica';
-                    ctx_1.fillStyle = '#fff';
+                    ctx_1.font = "11px Helvetica";
+                    ctx_1.fillStyle = "#fff";
                     // ctx.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
                     // ctx.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
                     if (!_this.isLock) {
@@ -326,7 +329,9 @@ var HomeComponent = /** @class */ (function () {
     HomeComponent.prototype.detect = function (face) {
         var _this = this;
         try {
-            this.faceService.Detect(face).then(function (faces) {
+            this.faceService
+                .Detect(face)
+                .then(function (faces) {
                 _this.isLock = true;
                 _this.faceService.PushFaceIds(faces).then(function (faceIDs) {
                     if (faceIDs.length > 0) {
@@ -343,16 +348,21 @@ var HomeComponent = /** @class */ (function () {
                                     identity.candidates.forEach(function (person) {
                                         if (_this.personIDs.indexOf(person.personId) < 0) {
                                             _this.personIDs.push(person.personId);
-                                            _this.faceService.GetPerson(_this.personGroupId, person.personId).then(function (res) {
+                                            _this.faceService
+                                                .GetPerson(_this.personGroupId, person.personId)
+                                                .then(function (res) {
                                                 var person = res;
                                                 person.image = face;
                                                 var bodyReq = {
                                                     image: face,
                                                     citizenid: person.userData
                                                 };
-                                                _this.restApi.post(_app_constants__WEBPACK_IMPORTED_MODULE_6__["Constants"].URL() + '/api/time-attendance', bodyReq).then(function (resp) {
+                                                _this.restApi
+                                                    .post(_app_constants__WEBPACK_IMPORTED_MODULE_6__["Constants"].URL() + "/api/time-attendance", bodyReq)
+                                                    .then(function (resp) {
                                                     console.log(resp);
-                                                }).catch(function (err) {
+                                                })
+                                                    .catch(function (err) {
                                                     console.log(err);
                                                 });
                                             });
@@ -369,31 +379,34 @@ var HomeComponent = /** @class */ (function () {
                         _this.isLock = false;
                     }
                 });
-            }).catch(function (err) {
-            });
+            })
+                .catch(function (err) { });
         }
         catch (_a) {
             this.isLock = false;
         }
     };
     HomeComponent.prototype.getCanvas = function () {
-        return document.getElementsByTagName('canvas')[0];
+        return document.getElementsByTagName("canvas")[0];
     };
     HomeComponent.prototype.getVideo = function () {
-        return document.getElementsByTagName('video')[0];
+        return document.getElementsByTagName("video")[0];
     };
     HomeComponent.prototype.onLogout = function () {
-        window.localStorage.removeItem('token-admin@schoolhub');
+        window.localStorage.removeItem("token-admin@schoolhub");
         this.task.stop();
-        this.router.navigate(['']);
+        this.router.navigate([""]);
     };
     HomeComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_3__["Component"])({
-            selector: 'app-home',
+            selector: "app-home",
             template: __webpack_require__(/*! ./home.component.html */ "./src/app/pages/home/home.component.html"),
             styles: [__webpack_require__(/*! ./home.component.css */ "./src/app/pages/home/home.component.css")]
         }),
-        __metadata("design:paramtypes", [_providers_face_api_service__WEBPACK_IMPORTED_MODULE_2__["FaceApiService"], _providers_auth_service__WEBPACK_IMPORTED_MODULE_1__["AuthService"], _providers_rest_api_service__WEBPACK_IMPORTED_MODULE_0__["RestApiService"], _angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"]])
+        __metadata("design:paramtypes", [_providers_face_api_service__WEBPACK_IMPORTED_MODULE_2__["FaceApiService"],
+            _providers_auth_service__WEBPACK_IMPORTED_MODULE_1__["AuthService"],
+            _providers_rest_api_service__WEBPACK_IMPORTED_MODULE_0__["RestApiService"],
+            _angular_router__WEBPACK_IMPORTED_MODULE_7__["Router"]])
     ], HomeComponent);
     return HomeComponent;
 }());
